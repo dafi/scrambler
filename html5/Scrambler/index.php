@@ -4,7 +4,7 @@
 <head>
     <title>Image Scrambler</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+    <link type="text/css" href="scrambler.css" rel="stylesheet"/>
     <script src="scrambler.js"></script>
     
     <script>
@@ -40,6 +40,14 @@
     
     <canvas id="srcCanvas"></canvas>
     <canvas id="destCanvas"></canvas>
+
+<div style="clear: both"></div>
+<div id="footer">
+    <ul>
+        <li><span>2012-<?php echo date("Y")?> Scrambler writter by Davide Ficano</span></li>
+        <li><a href="http://github.com/dafi/scrambler">Github</a></li>
+    </ul>
+</div>
 
 </body>
 </html>

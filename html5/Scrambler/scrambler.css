@@ -1,0 +1,19 @@
+#footer {
+  text-align: center;
+  margin-top: 3em;
+}
+
+#footer ul {
+  list-style-image: none;
+  list-style-position: outside;
+  list-style-type: none;
+}
+
+#footer li {
+  display:inline;
+}
+
+#footer li a {
+  font-weight: bold;
+  margin: 0 0.8em;
+}
