@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 
 public class ScramblerUtils {
-	public static int[] arratRange(int count) {
+	public static int[] arrayRange(int count) {
 		int[] arr = new int[count];
 		
 		for (int i = 0; i < count; i++) {
@@ -17,7 +17,7 @@ public class ScramblerUtils {
 	public static int[] shuffle(int[] arr) {
 	    for (int i = arr.length - 1; i >= 0; --i) {
 	        // swap indexes
-	        int r = (int)Math.rint(i);
+	        int r = (int)Math.rint(Math.random() * i);
 	        int t = arr[i];
 	        arr[i] = arr[r];
 	        arr[r] = t;
@@ -30,7 +30,7 @@ public class ScramblerUtils {
 	    int px = (int)Math.ceil(image.getWidth() / (double)piecesPerLine);
 	    int ph = (int)Math.ceil(image.getHeight() / (double)piecesPerLine);
 	    int count = piecesPerLine * piecesPerLine;
-	    int[] arr = shuffle(arratRange(count));
+	    int[] arr = shuffle(arrayRange(count));
 
 		Bitmap destBmp = Bitmap.createBitmap(image.getWidth(), image.getHeight(), image.getConfig());
 		Canvas canvas = new Canvas(destBmp);
