@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, ScramblerActivity!</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    
     <string name="app_name">Scrambler</string>
     <string name="imageDescr">Description</string>
     <string name="url">Url</string>
+    <string name="saveImage">Save Image</string>
+    <string name="shareImage">Share Image</string>
+    <string name="fileName">File Name</string>
+    <string name="scrambledImage">Scrambled Image</string>
+    <string name="shareVia">Share Via</string>
+    <string name="imageSavedOn">Image saved on %1$s</string>
     
 </resources>

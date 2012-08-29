@@ -4,7 +4,6 @@ package com.dafi.scambler;
 // http://www.vogella.com/articles/AndroidPerformance/article.html
 // http://developer.android.com/training/sharing/receive.html
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,10 +31,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class ScramblerActivity extends Activity {
-	private static final int SAVE_IMAGE = 0;
-    private static final int SHARE_IMAGE = 1;
-
-    /** Called when the activity is first created. */
+    private static final String JPEG_MIME = "image/jpeg";
+	/** Called when the activity is first created. */
 	Bitmap originalImage;
 	Bitmap scrambledImage;
 
@@ -43,6 +40,8 @@ public class ScramblerActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        registerForContextMenu(findViewById(R.id.scramblerImage));
 
 		// Get intent, action and MIME type
 	    Intent intent = getIntent();
@@ -60,7 +59,13 @@ public class ScramblerActivity extends Activity {
 	        new ReadImageAsyncTask().execute(new String[] {"http://farm3.staticflickr.com/2457/3697466514_721bd9c533_d.jpg"});
 	    }
     }
-    
+
+	public void onCreateContextMenu(android.view.ContextMenu menu, android.view.View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		menu.add(Menu.NONE, R.id.saveImage, Menu.NONE, R.string.saveImage);
+		menu.add(Menu.NONE, R.id.shareImage, Menu.NONE, R.string.shareImage);
+	}	
+
 	void handleSendImage(Intent intent) {
 	    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
 	    if (imageUri != null) {
@@ -93,10 +98,10 @@ public class ScramblerActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.saveImage:
-            	promptFileName(SAVE_IMAGE);
+            	promptFileName(R.id.saveImage);
             	break;
             case R.id.shareImage:
-            	promptFileName(SHARE_IMAGE);
+            	promptFileName(R.id.shareImage);
             	break;
             case R.id.scrambleImage:
             	scramble();
@@ -104,27 +109,30 @@ public class ScramblerActivity extends Activity {
         }
         return true;
     }
+    
+    public boolean onContextItemSelected (MenuItem item) {
+    	return onOptionsItemSelected(item);
+    }
 
-    private void promptFileName(final int operation) {
+    private void promptFileName(final int id) {
     	final EditText input = new EditText(this);
     	input.setText("scrambleApp");
     	input.selectAll();
     	
     	new AlertDialog.Builder(this)
-        .setTitle("Update Status")
-        .setMessage("message")
+        .setTitle(R.string.fileName)
         .setView(input)
-        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String fileName = input.getText().toString();
-                if (operation == SAVE_IMAGE) {
+                if (id == R.id.saveImage) {
                 	saveImage(fileName);
-                } else if (operation == SHARE_IMAGE) {
+                } else if (id == R.id.shareImage) {
                 	shareImage(fileName);
                 }
             }
     	})
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // Do nothing.
             }
@@ -136,17 +144,17 @@ public class ScramblerActivity extends Activity {
     	File imageFile = saveImage(fileName);
 
 		ContentValues values = new ContentValues(2);
-	    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+	    values.put(MediaStore.Images.Media.MIME_TYPE, JPEG_MIME);
 	    values.put(MediaStore.Images.Media.DATA, imageFile.getAbsolutePath());
 	    // sharing on google plus works only using MediaStore 
 	    Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
 		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-		sharingIntent.setType("image/jpeg");
-		sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Scrambled image");
+		sharingIntent.setType(JPEG_MIME);
+		sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getString(R.string.scrambledImage));
 		sharingIntent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
 		
-		startActivity(Intent.createChooser(sharingIntent, "Share via"));
+		startActivity(Intent.createChooser(sharingIntent, getString(R.string.shareVia)));
 	}
 
 	@Override
@@ -166,15 +174,12 @@ public class ScramblerActivity extends Activity {
 
     	    fout.flush();
     	    fout.close();
-
-    	} catch (FileNotFoundException e) {
-    	    // TODO Auto-generated catch block
-    	    e.printStackTrace();
-    	} catch (IOException e) {
-    	    // TODO Auto-generated catch block
+        	Toast.makeText(this, getString(R.string.imageSavedOn, imagePath), Toast.LENGTH_LONG).show();
+    	} catch (Exception e) {
+        	Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+    		
     	    e.printStackTrace();
     	}    	
-    	Toast.makeText(this, "Image saved on " + imagePath, Toast.LENGTH_LONG).show();
     	
     	return imageFile;
 	}
