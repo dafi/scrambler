@@ -1,4 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/chooseImage"
+        android:title="Choose" />
     <item android:id="@+id/saveImage"
         android:title="Save" />
     <item android:id="@+id/shareImage"

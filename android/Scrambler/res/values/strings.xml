@@ -12,5 +12,6 @@
     <string name="scrambledImage">Scrambled Image</string>
     <string name="shareVia">Share Via</string>
     <string name="imageSavedOn">Image saved on %1$s</string>
-    
+    <string name="errorReadingImage">Error reading image: %1$</string>
+    <string name="chooseImage">Choose...</string>
 </resources>

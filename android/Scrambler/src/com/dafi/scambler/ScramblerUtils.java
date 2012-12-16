@@ -1,6 +1,7 @@
 package com.dafi.scambler;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
@@ -32,7 +33,9 @@ public class ScramblerUtils {
 	    int count = piecesPerLine * piecesPerLine;
 	    int[] arr = shuffle(arrayRange(count));
 
-		Bitmap destBmp = Bitmap.createBitmap(image.getWidth(), image.getHeight(), image.getConfig());
+
+		Config config = image.getConfig() == null ? Bitmap.Config.ARGB_8888 : image.getConfig();
+		Bitmap destBmp = Bitmap.createBitmap(image.getWidth(), image.getHeight(), config);
 		Canvas canvas = new Canvas(destBmp);
 
 	    for (int i = 0; i < piecesPerLine; i++) {

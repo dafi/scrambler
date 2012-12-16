@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 public class ScramblerActivity extends Activity {
     private static final String JPEG_MIME = "image/jpeg";
+	private static final int SELECT_PHOTO = 0;
 	/** Called when the activity is first created. */
 	Bitmap originalImage;
 	Bitmap scrambledImage;
@@ -62,6 +63,7 @@ public class ScramblerActivity extends Activity {
 
 	public void onCreateContextMenu(android.view.ContextMenu menu, android.view.View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		menu.add(Menu.NONE, R.id.chooseImage, Menu.NONE, R.string.chooseImage);
 		menu.add(Menu.NONE, R.id.saveImage, Menu.NONE, R.string.saveImage);
 		menu.add(Menu.NONE, R.id.shareImage, Menu.NONE, R.string.shareImage);
 	}	
@@ -106,11 +108,44 @@ public class ScramblerActivity extends Activity {
             case R.id.scrambleImage:
             	scramble();
             	break;
+            case R.id.chooseImage:
+            	chooseImage();
+            	break;
+            	
         }
         return true;
     }
     
-    public boolean onContextItemSelected (MenuItem item) {
+    private void chooseImage() {
+    	Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+    	photoPickerIntent.setType("image/*");
+    	startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, 
+    	       Intent imageReturnedIntent) {
+    	super.onActivityResult(requestCode, resultCode, imageReturnedIntent); 
+
+	    switch(requestCode) { 
+	    	case SELECT_PHOTO:
+			if (resultCode == RESULT_OK) {
+				try {
+					Uri selectedImage = imageReturnedIntent.getData();
+					InputStream imageStream = getContentResolver()
+							.openInputStream(selectedImage);
+					showImage(BitmapFactory.decodeStream(imageStream));
+				} catch (Exception e) {
+					Toast.makeText(
+							this,
+							getString(R.string.errorReadingImage,
+									e.getMessage()), Toast.LENGTH_LONG).show();
+				}
+			}
+	    }
+	}
+    
+    
+	public boolean onContextItemSelected (MenuItem item) {
     	return onOptionsItemSelected(item);
     }
 
