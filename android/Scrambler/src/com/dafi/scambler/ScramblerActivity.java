@@ -36,6 +36,7 @@ public class ScramblerActivity extends Activity {
 	/** Called when the activity is first created. */
 	Bitmap originalImage;
 	Bitmap scrambledImage;
+	private int piecesPerLine = 3;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,16 +55,15 @@ public class ScramblerActivity extends Activity {
 	            handleSendImage(intent); // Handle single image being sent
 	        }
 	    } else {
-	        // started from home screen
-	        // Since 3.0 networking operations aren't allowed on main thread
-	        // so we read using an AsyncTask
-	        new ReadImageAsyncTask().execute(new String[] {"http://farm3.staticflickr.com/2457/3697466514_721bd9c533_d.jpg"});
+	    	if (originalImage == null) {
+		        new ReadImageAsyncTask().execute(new String[] {"http://farm3.staticflickr.com/2457/3697466514_721bd9c533_d.jpg"});
+	    	}
 	    }
     }
 
 	public void onCreateContextMenu(android.view.ContextMenu menu, android.view.View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(Menu.NONE, R.id.chooseImage, Menu.NONE, R.string.chooseImage);
+		menu.add(Menu.NONE, R.id.chooseImage, Menu.NONE, R.string.choose);
 		menu.add(Menu.NONE, R.id.saveImage, Menu.NONE, R.string.saveImage);
 		menu.add(Menu.NONE, R.id.shareImage, Menu.NONE, R.string.shareImage);
 	}	
@@ -111,12 +111,43 @@ public class ScramblerActivity extends Activity {
             case R.id.chooseImage:
             	chooseImage();
             	break;
+            case R.id.pieces:
+            	promptPieces();
+            	break;
             	
         }
         return true;
     }
     
-    private void chooseImage() {
+    private void promptPieces() {
+    	final EditText input = new EditText(this);
+    	input.setText(String.valueOf(piecesPerLine));
+    	input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+    	input.selectAll();
+    	
+    	new AlertDialog.Builder(this)
+        .setTitle(R.string.choosePiecesNumber)
+        .setView(input)
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String text = input.getText().toString();
+            	try {
+					int pieces = Integer.parseInt(text);
+                    if (pieces > 1) {
+                    	piecesPerLine = pieces;
+                    	scramble();
+                    }
+				} catch (Exception e) {
+					Toast.makeText(getApplicationContext(),
+							getString(R.string.invalidNumber, text),
+							Toast.LENGTH_LONG).show();
+				}
+            }
+    	})
+        .show();
+	}
+
+	private void chooseImage() {
     	Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
     	photoPickerIntent.setType("image/*");
     	startActivityForResult(photoPickerIntent, SELECT_PHOTO);
@@ -226,7 +257,7 @@ public class ScramblerActivity extends Activity {
 
 	private void scramble() {
 		ImageView imageView = (ImageView) findViewById(R.id.scramblerImage);
-		scrambledImage = ScramblerUtils.scrambleImage(originalImage, 3);
+		scrambledImage = ScramblerUtils.scrambleImage(originalImage, piecesPerLine);
 		imageView.setImageBitmap(scrambledImage);
 	}
 	

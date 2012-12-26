@@ -13,5 +13,11 @@
     <string name="shareVia">Share Via</string>
     <string name="imageSavedOn">Image saved on %1$s</string>
     <string name="errorReadingImage">Error reading image: %1$</string>
-    <string name="chooseImage">Choose...</string>
+    <string name="choose">Choose&#8230;</string>
+    <string name="pieces">Pieces</string>
+    <string name="scramble">Scramble</string>
+    <string name="share">Share</string>
+    <string name="save">Save</string>
+    <string name="choosePiecesNumber">Number of pieces per line</string>
+    <string name="invalidNumber">\'%1$\' is invalid</string>
 </resources>
