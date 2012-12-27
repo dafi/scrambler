@@ -8,8 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,7 +29,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class ScramblerActivity extends Activity {
-    private static final String JPEG_MIME = "image/jpeg";
+    private static final String BUNDLE_PIECES_PER_LINE = "piecesPerLine";
+	private static final String BUNDLE_ORIGINAL_IMAGE = "originalImage";
+	private static final String JPEG_MIME = "image/jpeg";
 	private static final int SELECT_PHOTO = 0;
 	/** Called when the activity is first created. */
 	Bitmap originalImage;
@@ -55,12 +55,23 @@ public class ScramblerActivity extends Activity {
 	            handleSendImage(intent); // Handle single image being sent
 	        }
 	    } else {
-	    	if (originalImage == null) {
+	    	Bitmap image = (Bitmap) (savedInstanceState != null ? savedInstanceState.getParcelable(BUNDLE_ORIGINAL_IMAGE) : null);
+	    	if (image == null) {
 		        new ReadImageAsyncTask().execute(new String[] {"http://farm3.staticflickr.com/2457/3697466514_721bd9c533_d.jpg"});
+	    	} else {
+	    		piecesPerLine = savedInstanceState.getInt(BUNDLE_PIECES_PER_LINE);
+	    		showImage(image);
 	    	}
 	    }
     }
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putParcelable(BUNDLE_ORIGINAL_IMAGE, originalImage);
+		outState.putInt(BUNDLE_PIECES_PER_LINE, piecesPerLine);
+	}
+	
 	public void onCreateContextMenu(android.view.ContextMenu menu, android.view.View v, android.view.ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		menu.add(Menu.NONE, R.id.chooseImage, Menu.NONE, R.string.choose);
@@ -80,14 +91,6 @@ public class ScramblerActivity extends Activity {
 			}
 	    }
 	}
-
-	public Bitmap readImage(String imageUrl) throws IOException {
-    	URL url = new URL(imageUrl);
-    	HttpURLConnection connection  = (HttpURLConnection) url.openConnection();
-
-    	InputStream is = connection.getInputStream();
-    	return BitmapFactory.decodeStream(is);  
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -266,7 +269,7 @@ public class ScramblerActivity extends Activity {
 		@Override
 		protected Bitmap doInBackground(String... url) {
 	        try {
-				return readImage(url[0]);
+				return ScramblerUtils.readImage(url[0]);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

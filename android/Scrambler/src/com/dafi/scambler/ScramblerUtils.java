@@ -1,7 +1,13 @@
 package com.dafi.scambler;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
@@ -53,4 +59,13 @@ public class ScramblerUtils {
 
 	    return destBmp;
 	}
+
+	public static Bitmap readImage(String imageUrl) throws IOException {
+    	URL url = new URL(imageUrl);
+    	HttpURLConnection connection  = (HttpURLConnection) url.openConnection();
+
+    	InputStream is = connection.getInputStream();
+    	return BitmapFactory.decodeStream(is);  
+    }
+
 }
